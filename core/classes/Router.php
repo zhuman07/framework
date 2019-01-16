@@ -65,7 +65,7 @@ final class Router
 
     public function execute()
     {
-        //echo var_dump($this->routes);
+        echo var_dump($this->routes);
     }
 
 }
