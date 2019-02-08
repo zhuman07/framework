@@ -21,8 +21,45 @@ final class Router
 
     private function __construct()
     {
-        $this->uri = $this->getUri();
-        $this->routes = $this->getRoutes();
+        if(!isset($_SERVER['REQUEST_URI'])) {
+            $this->uri = trim($_SERVER['REQUEST_URI'], '/');
+        } else {
+            $this->uri = $_SERVER['REQUEST_URI'];
+        }
+
+        $route_file = ROOT.'configs/routes.php';
+        if(!file_exists($route_file)){
+            /*throw new Exception('file doesn\'t exist');*/
+            die('file doesn\'t exist');
+        }
+        //$array = yaml_parse($route_file);
+        $routes_array = require_once($route_file);
+        $this->routes = $routes_array;
+
+        $uri = $this->uri;
+        foreach ($this->routes as $uriPattern => $path) {
+
+            if(preg_match("#$uriPattern#", $uri)) {
+                $internalRouter = preg_replace("#$uriPattern#", $path['path'], $uri);
+                $segments = explode("/", $internalRouter);
+                $controllerName = $path['controller']."Controller";
+                $controllerName = ucfirst($controllerName);
+
+                $this->controller = $controllerName;
+                $actionName = 'action'.ucfirst($path['action']);
+                $this->action = $actionName;
+                /*$parametrs = $segments;
+                $controllerFile = ROOT."/controllers/".$controllerName.".php";
+                if(file_exists($controllerFile)) {
+                    include_once($controllerFile);
+                }
+                $controllerObject = new $controllerName;
+                $result = call_user_func_array(array($controllerObject, $actionName), $parametrs);
+                if($result != null) {
+                    break;
+                }*/
+            }
+        }
     }
 
     private function __clone()
@@ -35,24 +72,14 @@ final class Router
         // TODO: Implement __wakeup() method.
     }
 
-    private function getUri()
+    public function getUri(): string
     {
-        if(isset($_SERVER['REQUEST_URI'])){
-            return $_SERVER['REQUEST_URI'];
-        }
-        return null;
+        return $this->uri;
     }
 
-    private function getRoutes()
+    public function getRoutes()
     {
-        $route_file = ROOT.'/configs/routes.php';
-        if(!file_exists($route_file)){
-            /*throw new Exception('file doesn\'t exist');*/
-            die('file doesn\'t exist');
-        }
-        //$array = yaml_parse($route_file);
-        $array = require_once($route_file);
-        return $array;
+        return $this->routes;
     }
 
     public static function getInstance()
@@ -63,9 +90,14 @@ final class Router
         return self::$instance;
     }
 
-    public function execute()
+    public function getController(): string
     {
-        echo var_dump($this->routes);
+        return $this->controller;
+    }
+
+    public function getAction(): string
+    {
+        return $this->action;
     }
 
 }

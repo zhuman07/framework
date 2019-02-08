@@ -2,7 +2,8 @@
 
 return array(
     '/' => [
-        'controller' => 'Welcome',
-        'action' => 'index'
+        'controller' => 'Home',
+        'action' => 'index',
+        'path' => 'home'
     ]
 );
