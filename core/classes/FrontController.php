@@ -7,8 +7,6 @@
  */
 namespace Core\Classes;
 
-use Core\Classes\Commands\ControllerCommand;
-
 final class FrontController
 {
 
@@ -31,9 +29,9 @@ final class FrontController
         $controllerName = $router->getController();
 
         $controller = "\App\Frontend\Controllers\\".$controllerName;
-        /*if(!file_exists($controllerPath)){
+        if(!class_exists($controller)){
             throw new \Exception('Controller not found');
-        }*/
+        }
         //$controller = require_once($controllerPath);
         $controller = new $controller($this->serviceContainer);
         $controller->execute();

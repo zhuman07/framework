@@ -17,6 +17,8 @@ final class Router
 
     private $action;
 
+    private $params;
+
     private static $instance;
 
     private function __construct()
@@ -36,29 +38,36 @@ final class Router
         $routes_array = require_once($route_file);
         $this->routes = $routes_array;
 
-        $uri = $this->uri;
-        foreach ($this->routes as $uriPattern => $path) {
+        $uri = $this->uri === "/" ? "/" : trim($this->uri, '/');
 
-            if(preg_match("#$uriPattern#", $uri)) {
-                $internalRouter = preg_replace("#$uriPattern#", $path['path'], $uri);
-                $segments = explode("/", $internalRouter);
+        foreach ($this->routes as $uriPattern => $path) {
+            preg_match_all("#(\{[A-Za-z]{1,}\})#", $uriPattern, $matches);
+            $uri_no_params = preg_replace("#(\/\{[A-Za-z]{1,}\})#", "", $uriPattern);
+            $params = array();
+
+            foreach ($matches[1] as $match){
+                $params[] = str_replace(array('{', '}'), '', $match);
+            }
+            foreach ($params as $param){
+                $uri_no_params .= "/(".$path[$param].")";
+            }
+
+            if(($uri === '/' && $uri_no_params === '/') || ($uri_no_params !== '/' && preg_match("#$uri_no_params#", $uri))) {
+                preg_match_all("#$uri_no_params#", $uri, $param_matches);
+                $assoc_params = array();
+                foreach ($params as $key => $val){
+                    $assoc_params[$val] = $param_matches[++$key][0];
+                }
                 $controllerName = $path['controller']."Controller";
                 $controllerName = ucfirst($controllerName);
-
                 $this->controller = $controllerName;
                 $actionName = 'action'.ucfirst($path['action']);
                 $this->action = $actionName;
-                /*$parametrs = $segments;
-                $controllerFile = ROOT."/controllers/".$controllerName.".php";
-                if(file_exists($controllerFile)) {
-                    include_once($controllerFile);
-                }
-                $controllerObject = new $controllerName;
-                $result = call_user_func_array(array($controllerObject, $actionName), $parametrs);
-                if($result != null) {
-                    break;
-                }*/
+                $this->params = $assoc_params;
+
+                break;
             }
+
         }
     }
 
@@ -90,7 +99,7 @@ final class Router
         return self::$instance;
     }
 
-    public function getController(): string
+    public function getController(): ?string
     {
         return $this->controller;
     }
@@ -98,6 +107,14 @@ final class Router
     public function getAction(): string
     {
         return $this->action;
+    }
+
+    public function param(string $key): ?string
+    {
+        if(!isset($this->params[$key])){
+            return null;
+        }
+        return $this->params[$key];
     }
 
 }
