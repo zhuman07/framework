@@ -10,7 +10,8 @@ namespace Core\Classes;
 abstract class DomainObject
 {
 
-    protected $table_name;
+    protected static $table_name;
+    protected static $fields;
 
     final public function __construct(int $id = 0)
     {
@@ -33,12 +34,17 @@ abstract class DomainObject
         return Collection::getCollection();
     }
 
-    public function getTableName()
+    public static function getTableName()
     {
-        return $this->table_name;
+        return static::$table_name;
     }
 
-    public function setValues(array $data)
+    public static function getFields(): array
+    {
+        return static::$fields;
+    }
+
+    public function values(array $data)
     {
         foreach ($data as $field => $val){
             $this->{$field} = $val;
@@ -50,10 +56,7 @@ abstract class DomainObject
     public function __call($name, $arguments)
     {
         if (!method_exists($this, $name)){
-            throw new \Exception('Method '.$name.' doesn\' exist');
-        }
-        if(strpos($name, 'set')){
-            $this->markDirty();
+            throw new \Exception('Method '.$name.' doesn\'t exist');
         }
     }
 

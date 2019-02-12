@@ -10,12 +10,13 @@ use Core\Classes\DomainObject;
 
 class News extends DomainObject
 {
-    protected $table_name = 'news';
+    protected static $table_name = 'news';
 
     protected $id;
     protected $title;
     protected $description;
     protected $date;
+    protected static $fields = ['title', 'description', 'date'];
 
     public function getId()
     {
@@ -35,6 +36,18 @@ class News extends DomainObject
     public function getDate()
     {
         return $this->date;
+    }
+
+    public function setTitle(string $title)
+    {
+        $this->title = $title;
+        $this->markDirty();
+    }
+
+    public function setDescription(string $description)
+    {
+        $this->description = $description;
+        $this->markDirty();
     }
 
 }

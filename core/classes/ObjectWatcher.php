@@ -84,13 +84,15 @@ class ObjectWatcher
 
     public function performOperations()
     {
+        /*var_dump($this->dirty);
+        die();*/
         foreach ($this->dirty as $key => $obj) {
             $obj->getFinder()->update($obj);
-            print "updating " . $obj->getName() . "\n";
+            print "updating " . $obj->getId() . "\n";
         }
         foreach ($this->new as $key => $obj) {
             $obj->getFinder()->insert($obj);
-            print "inserting " . $obj->getName() . "\n";
+            print "inserting " . $obj->getId() . "\n";
         }
         $this->dirty = [];
         $this->new = [];
