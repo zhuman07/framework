@@ -28,7 +28,7 @@ final class FrontController
         $router = $this->serviceContainer->get('router');
         $controllerName = $router->getController();
 
-        $controller = "\App\Frontend\Controllers\\".$controllerName;
+        $controller = "\\App\\Frontend\\Controllers\\".$controllerName;
         if(!class_exists($controller)){
             throw new \Exception('Controller not found');
         }

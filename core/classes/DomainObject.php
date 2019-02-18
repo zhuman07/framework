@@ -7,6 +7,8 @@
  */
 namespace Core\Classes;
 
+use Core\Exceptions\CoreException;
+
 abstract class DomainObject
 {
 
@@ -47,6 +49,9 @@ abstract class DomainObject
     public function values(array $data)
     {
         foreach ($data as $field => $val){
+            if(!property_exists($this, $field)){
+                throw new CoreException("the property $field doesn't exist in class ".get_class($this));
+            }
             $this->{$field} = $val;
         }
 

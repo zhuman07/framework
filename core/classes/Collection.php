@@ -7,6 +7,8 @@
  */
 namespace Core\Classes;
 
+use Core\Exceptions\CoreException;
+
 class Collection implements \Iterator
 {
 
@@ -25,7 +27,7 @@ class Collection implements \Iterator
         $this->raw = $raw;
         $this->total = count($raw);
         if (count($raw) && is_null($mapper)) {
-            throw new \Exception("need Mapper to generate objects");
+            throw new CoreException("need Mapper to generate objects");
         }
         $this->mapper = $mapper;
     }
