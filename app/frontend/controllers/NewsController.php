@@ -7,9 +7,7 @@
  */
 namespace App\Frontend\Controllers;
 
-use Core\Classes\Commands\ControllerCommand;
-
-class NewsController extends ControllerCommand
+class NewsController extends BaseController
 {
 
     public function actionView()
@@ -18,7 +16,19 @@ class NewsController extends ControllerCommand
         $description = 'About news';
 
         echo $this->router->param('id')." ".$this->router->param('sef');
-        //die();
+
+        $this->content = $this->viewHelper->render('news/view', array(
+            'title' => $title,
+            'description' => $description
+        ));
+    }
+
+    public function actionList()
+    {
+        $title = 'News List';
+        $description = 'About news list';
+
+        echo $this->router->param('sef');
 
         $this->content = $this->viewHelper->render('news/view', array(
             'title' => $title,

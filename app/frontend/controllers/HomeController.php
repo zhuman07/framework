@@ -7,12 +7,11 @@
  */
 namespace App\Frontend\Controllers;
 
-use Core\Classes\Commands\ControllerCommand;
 use App\Models\News;
 use Core\Classes\Mapper;
 use Core\Classes\ObjectWatcher;
 
-class HomeController extends ControllerCommand
+class HomeController extends BaseController
 {
 
     public function actionIndex()

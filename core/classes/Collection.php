@@ -16,7 +16,6 @@ class Collection implements \Iterator
     protected $total;
     protected $raw = [];
 
-    private $result;
     private $pointer = 0;
     private $objects = [];
 
@@ -36,7 +35,7 @@ class Collection implements \Iterator
     {
         $class = $this->targetClass();
         if (! ($object instanceof $class )) {
-            throw new \Exception("This is a {$class} collection");
+            throw new CoreException("This is a {$class} collection");
         }
         $this->notifyAccess();
         $this->objects[$this->total] = $object;
@@ -75,9 +74,9 @@ class Collection implements \Iterator
         $this->run = true;
     }
 
-    public function targetClass(): string
+    protected function targetClass(): ?string
     {
-        return $this->mapper->getModelClassName();
+        return $this->mapper ? $this->mapper->getModelClassName() : null;
     }
 
     public function rewind()
@@ -106,6 +105,11 @@ class Collection implements \Iterator
     public function valid()
     {
         return (! is_null($this->current()));
+    }
+
+    public function getTotal()
+    {
+        return $this->total;
     }
 
 }

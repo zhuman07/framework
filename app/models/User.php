@@ -10,7 +10,7 @@ use Core\Classes\DomainObject;
 
 class User extends DomainObject
 {
-    protected $table_name = 'users';
+    protected static $table_name = 'users';
 
     protected $id;
     protected $email;
@@ -24,6 +24,12 @@ class User extends DomainObject
     public function getEmail()
     {
         return $this->email;
+    }
+
+    public function setEmail(string $email)
+    {
+        $this->email = $email;
+        $this->markDirty();
     }
 
 }
