@@ -12,31 +12,70 @@ class News extends DomainObject
 {
     protected static $table_name = 'news';
 
+    /**
+     * @var int
+     */
     protected $id;
+
+    /**
+     * @var string
+     */
     protected $title;
+
+    /**
+     * @var string
+     */
     protected $description;
+
+    /**
+     * @var \DateTime
+     */
     protected $date;
     protected static $fields = ['title', 'description', 'date'];
 
-    public function getId()
+    /*
+     |---------------------------------------------------------------------
+     |  Getters
+     |---------------------------------------------------------------------
+     */
+
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getTitle()
+    /**
+     * @return string
+     */
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function getDescription()
+    /**
+     * @return string
+     */
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function getDate()
+    /**
+     * @return \DateTime
+     */
+    public function getDate(): \DateTime
     {
-        return $this->date;
+        return new \DateTime($this->date);
     }
+
+    /*
+     |-------------------------------------------------------------------
+     |  Setters
+     |-------------------------------------------------------------------
+     */
 
     public function setTitle(string $title)
     {

@@ -2,11 +2,11 @@
 
 <p><?= $description ?></p>
 
-<?/* foreach ($news as $item): */?><!--
+<? foreach ($news as $item): ?>
 <ul>
-    <li>ID: <?/*= $item->getId() */?></li>
-    <li>Title: <?/*= $item->getTitle() */?></li>
-    <li>Description: <?/*= $item->getDescription() */?></li>
-    <li>Date: <?/*= $item->getDate() */?></li>
+    <li>ID: <?= $item->getId() ?></li>
+    <li>Title: <?= $item->getTitle() ?></li>
+    <li>Description: <?= $item->getDescription() ?></li>
+    <li>Date: <?= $item->getDate()->format("d m Y") ?></li>
 </ul>
---><?/* endforeach; */?>
+<? endforeach; ?>

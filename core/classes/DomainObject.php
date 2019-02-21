@@ -12,14 +12,21 @@ use Core\Exceptions\CoreException;
 abstract class DomainObject
 {
 
+    /**
+     * @var string
+     */
     protected static $table_name;
+
+    /**
+     * @var array
+     */
     protected static $fields;
 
     final public function __construct(int $id = 0)
     {
         $this->id = $id;
 
-        if($id <= 0){
+        if($id === 0){
             $this->markNew();
         }
     }
@@ -31,21 +38,36 @@ abstract class DomainObject
         }
     }
 
-    public static function getCollection()
+
+    /**
+     * @return Collection
+     */
+    public static function getCollection(): Collection
     {
         return Collection::getCollection();
     }
 
-    public static function getTableName()
+    /**
+     * @return string
+     */
+    public static function getTableName(): string
     {
         return static::$table_name;
     }
 
+    /**
+     * @return array
+     */
     public static function getFields(): array
     {
         return static::$fields;
     }
 
+    /**
+     * @param array $data
+     * @return $this
+     * @throws CoreException
+     */
     public function values(array $data)
     {
         foreach ($data as $field => $val){
@@ -85,7 +107,10 @@ abstract class DomainObject
         ObjectWatcher::addClean($this);
     }
 
-    public function getFinder()
+    /**
+     * @return Mapper
+     */
+    public function getFinder(): Mapper
     {
         return new Mapper(get_class($this));
     }

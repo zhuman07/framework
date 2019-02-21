@@ -10,6 +10,13 @@ namespace Core\Classes;
 class ViewHelper
 {
 
+    /**
+     * @param string $path
+     * @param array|null $variables
+     * @param bool $print
+     * @return null|string
+     * @throws \ErrorException
+     */
     public function render(string $path, array $variables = null, $print = false)
     {
         $output = null;

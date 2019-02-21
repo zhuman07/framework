@@ -9,15 +9,35 @@ namespace Core\Classes;
 
 final class Router
 {
+    /**
+     * @var array
+     */
     private $routes;
 
+    /**
+     * @var string
+     */
     private $uri;
 
+    /**
+     * @var string
+     */
     private $controller;
 
+    /**
+     * @var string
+     */
     private $action;
 
+    /**
+     * @var array
+     */
     private $params;
+
+    /**
+     * @var string
+     */
+    private $current_route;
 
     private static $instance;
 
@@ -40,16 +60,16 @@ final class Router
 
         $uri = $this->uri === "/" ? "/" : trim($this->uri, '/');
 
-        foreach ($this->routes as $uriPattern => $path) {
-            preg_match_all("#(\{[A-Za-z]{1,}\})#", $uriPattern, $matches);
-            $uri_no_params = preg_replace("#(\/\{[A-Za-z]{1,}\})#", "", $uriPattern);
+        foreach ($this->routes as $route_name => $route_options) {
+            preg_match_all("#(\{[A-Za-z]{1,}\})#", $route_options['path'], $matches);
+            $uri_no_params = preg_replace("#(\/\{[A-Za-z]{1,}\})#", "",  $route_options['path']);
             $params = array();
 
             foreach ($matches[1] as $match){
                 $params[] = str_replace(array('{', '}'), '', $match);
             }
             foreach ($params as $param){
-                $uri_no_params .= "/(".$path[$param].")";
+                $uri_no_params .= "/(".$route_options[$param].")";
             }
 
             if(($uri === '/' && $uri_no_params === '/') || ($uri_no_params !== '/' && preg_match("#$uri_no_params#", $uri))) {
@@ -58,13 +78,13 @@ final class Router
                 foreach ($params as $key => $val){
                     $assoc_params[$val] = $param_matches[++$key][0];
                 }
-                $controllerName = $path['controller']."Controller";
+                $controllerName = $route_options['controller']."Controller";
                 $controllerName = ucfirst($controllerName);
                 $this->controller = $controllerName;
-                $actionName = 'action'.ucfirst($path['action']);
+                $actionName = 'action'.ucfirst($route_options['action']);
                 $this->action = $actionName;
                 $this->params = $assoc_params;
-
+                $this->current_route = $route_name;
                 break;
             }
 
@@ -86,7 +106,7 @@ final class Router
         return $this->uri;
     }
 
-    public function getRoutes()
+    private function getRoutes()
     {
         return $this->routes;
     }
@@ -99,16 +119,34 @@ final class Router
         return self::$instance;
     }
 
+    /**
+     * @return null|string
+     */
+    public function getRoute(): ?string
+    {
+        return $this->current_route;
+    }
+
+    /**
+     * @return null|string
+     */
     public function getController(): ?string
     {
         return $this->controller;
     }
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return $this->action;
     }
 
+    /**
+     * @param string $key
+     * @return null|string
+     */
     public function param(string $key): ?string
     {
         if(!isset($this->params[$key])){

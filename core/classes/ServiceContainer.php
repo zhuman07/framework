@@ -7,22 +7,32 @@
  */
 namespace Core\Classes;
 
+use Core\Exceptions\CoreException;
+
 class ServiceContainer
 {
 
+    /**
+     * @var array|mixed
+     */
     private $services = [];
 
     public function __construct()
     {
-        $this->services = require_once(ROOT . "configs/services.php");
+        $this->services = require(ROOT . "configs/services.php");
     }
 
-    public function get(string $class)
+    /**
+     * @param string $serviceName
+     * @return mixed
+     * @throws \Exception
+     */
+    public function get(string $serviceName)
     {
-        if (!isset($this->services[$class])) {
-            throw new \Exception("unknown component '$class'");
+        if (!isset($this->services[$serviceName])) {
+            throw new CoreException("unknown component '$serviceName'");
         }
-        $ret = $this->services[$class];
+        $ret = $this->services[$serviceName];
         return $ret;
     }
 

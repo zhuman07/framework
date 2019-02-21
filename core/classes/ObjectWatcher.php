@@ -9,16 +9,35 @@ namespace Core\Classes;
 
 class ObjectWatcher
 {
+    /**
+     * @var array
+     */
     private $all = [];
+
+    /**
+     * @var array
+     */
     private $dirty = [];
+
+    /**
+     * @var array
+     */
     private $new = [];
+
+    /**
+     * @var array
+     */
     private $delete = [];
+
     private static $instance = null;
 
     private function __construct()
     {
     }
 
+    /**
+     * @return ObjectWatcher
+     */
     public static function instance(): self
     {
         if (is_null(self::$instance)) {
@@ -27,19 +46,31 @@ class ObjectWatcher
         return self::$instance;
     }
 
+    /**
+     * @param DomainObject $obj
+     * @return string
+     */
     public function globalKey(DomainObject $obj): string
     {
         $key = get_class($obj) . "." . $obj->getId();
         return $key;
     }
 
+    /**
+     * @param DomainObject $obj
+     */
     public static function add(DomainObject $obj)
     {
         $inst = self::instance();
         $inst->all[$inst->globalKey($obj)] = $obj;
     }
 
-    public static function exists($classname, $id)
+    /**
+     * @param string $classname
+     * @param int $id
+     * @return DomainObject|null
+     */
+    public static function exists(string $classname, int $id): ?DomainObject
     {
         $inst = self::instance();
         $key = "{$classname}.{$id}";
@@ -49,13 +80,19 @@ class ObjectWatcher
         return null;
     }
 
-    public static function addDelete(DomainObject $obj)
+    /**
+     * @param DomainObject $obj
+     */
+    public static function addDelete(DomainObject $obj): void
     {
         $inst = self::instance();
         $inst->delete[$inst->globalKey($obj)] = $obj;
     }
 
-    public static function addDirty(DomainObject $obj)
+    /**
+     * @param DomainObject $obj
+     */
+    public static function addDirty(DomainObject $obj): void
     {
         $inst = self::instance();
         if (! in_array($obj, $inst->new, true)) {
@@ -63,13 +100,19 @@ class ObjectWatcher
         }
     }
 
-    public static function addNew(DomainObject $obj)
+    /**
+     * @param DomainObject $obj
+     */
+    public static function addNew(DomainObject $obj): void
     {
         $inst = self::instance();
         $inst->new[] = $obj;
     }
 
-    public static function addClean(DomainObject $obj)
+    /**
+     * @param DomainObject $obj
+     */
+    public static function addClean(DomainObject $obj): void
     {
         $inst = self::instance();
         unset($inst->delete[$inst->globalKey($obj)]);
@@ -82,7 +125,7 @@ class ObjectWatcher
         );
     }
 
-    public function performOperations()
+    public function performOperations(): void
     {
         /*var_dump($this->dirty);
         die();*/

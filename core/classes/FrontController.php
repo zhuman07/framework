@@ -10,6 +10,9 @@ namespace Core\Classes;
 final class FrontController
 {
 
+    /**
+     * @var ServiceContainer
+     */
     private $serviceContainer;
 
     private function __construct()

@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <phpunit bootstrap="vendor/autoload.php"
-         backupGlobals="true"
+         backupGlobals="false"
          backupStaticAttributes="false"
          colors="true"
          verbose="true"
-         stopOnFailure="false">
+         stopOnFailure="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         cacheResult="false">
     <testsuites>
-        <testsuite name="test suite">
-            <directory>tests</directory>
+        <testsuite name="Unit test">
+            <directory suffix="Test.php">tests/unit</directory>
+        </testsuite>
+        <testsuite name="Core classes test">
+            <directory suffix="Test.php">tests/core</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <env name="APP_ENV" value="test"/>
+    </php>
 </phpunit>

@@ -12,13 +12,34 @@ use Core\Exceptions\CoreException;
 class Collection implements \Iterator
 {
 
+    /**
+     * @var Mapper
+     */
     protected $mapper;
+
+    /**
+     * @var int
+     */
     protected $total;
+
+    /**
+     * @var array
+     */
     protected $raw = [];
 
+    /**
+     * @var int
+     */
     private $pointer = 0;
+
+    /**
+     * @var array
+     */
     private $objects = [];
 
+    /**
+     * @var bool
+     */
     private $run = false;
 
     public function __construct(array $raw = [], Mapper $mapper = null)
@@ -49,7 +70,11 @@ class Collection implements \Iterator
         }
     }*/
 
-    private function getRow($num)
+    /**
+     * @param $num
+     * @return mixed|null
+     */
+    private function getRow($num): ?DomainObject
     {
         $this->notifyAccess();
         if ($num >= $this->total || $num < 0) {
@@ -74,6 +99,9 @@ class Collection implements \Iterator
         $this->run = true;
     }
 
+    /**
+     * @return null|string
+     */
     protected function targetClass(): ?string
     {
         return $this->mapper ? $this->mapper->getModelClassName() : null;
@@ -107,6 +135,9 @@ class Collection implements \Iterator
         return (! is_null($this->current()));
     }
 
+    /**
+     * @return int
+     */
     public function getTotal()
     {
         return $this->total;

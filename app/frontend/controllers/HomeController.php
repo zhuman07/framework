@@ -19,10 +19,10 @@ class HomeController extends BaseController
         $title = 'Hello World';
         $description = 'Site description';
 
-        /*$news = new Mapper(News::class);
+        $news = new Mapper(News::class);
         $news = $news->findAll();
 
-        $someNews = new Mapper(News::class);
+        /*$someNews = new Mapper(News::class);
         $someNews = $someNews->find(4);
         $someNews->setTitle('updated title');
         $someNews->setDescription('updated description');
@@ -34,7 +34,7 @@ class HomeController extends BaseController
         $this->content = $this->viewHelper->render('index', array(
             'title' => $title,
             'description' => $description,
-            //'news' => $news
+            'news' => $news
         ));
     }
 

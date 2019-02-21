@@ -1,12 +1,23 @@
 {
+    "name": "mini framework",
+    "description": "My mini framework to practise my theoretical knowledge about patterns and php unit",
+    "keywords": [
+        "framework",
+        "patterns",
+        "phpunit"
+    ],
     "require-dev": {
         "phpunit/phpunit": "^8.0"
     },
     "autoload": {
         "psr-4": {
             "Core\\": "core/",
-            "Tests\\": "tests/",
             "App\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     }
 }

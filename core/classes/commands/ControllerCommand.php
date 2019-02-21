@@ -14,11 +14,32 @@ use Core\Classes\ViewHelper;
 
 class ControllerCommand extends Command
 {
+
+    /**
+     * @var ServiceContainer
+     */
     protected $serviceContainer;
+
+    /**
+     * @var string
+     */
     protected $template;
+
     protected $content;
+
+    /**
+     * @var bool
+     */
     protected $render = true;
+
+    /**
+     * @var Router
+     */
     protected $router;
+
+    /**
+     * @var ViewHelper
+     */
     protected $viewHelper;
 
     public function __construct(ServiceContainer $serviceContainer)
@@ -28,14 +49,14 @@ class ControllerCommand extends Command
         $this->viewHelper = $serviceContainer->get('viewHelper');
     }
 
-    protected function before()
+    protected function before(): void
     {
         if(empty($this->template)){
             $this->template = 'layout';
         }
     }
 
-    protected function after()
+    protected function after(): void
     {
 
     }
@@ -48,7 +69,9 @@ class ControllerCommand extends Command
             throw new \Exception('Action not found');
         }
         $this->{$action}();
-        $this->viewHelper->render($this->template, array('content'=>$this->content), true);
+        if($this->render === true){
+            $this->viewHelper->render($this->template, array('content'=>$this->content), true);
+        }
         $this->after();
     }
 

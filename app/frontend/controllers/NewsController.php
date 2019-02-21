@@ -25,15 +25,19 @@ class NewsController extends BaseController
 
     public function actionList()
     {
+        header('Content-Type: application/json');
+        $this->render = false;
         $title = 'News List';
         $description = 'About news list';
 
-        echo $this->router->param('sef');
+        $arr = array('route_name' => $this->router->getRoute());
 
-        $this->content = $this->viewHelper->render('news/view', array(
+        echo json_encode($arr);
+
+        /*$this->content = $this->viewHelper->render('news/view', array(
             'title' => $title,
             'description' => $description
-        ));
+        ));*/
     }
 
 }

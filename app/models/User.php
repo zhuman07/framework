@@ -12,20 +12,52 @@ class User extends DomainObject
 {
     protected static $table_name = 'users';
 
+    /**
+     * @var int
+     */
     protected $id;
+
+    /**
+     * @var string
+     */
     protected $email;
+
+    /**
+     * @var string
+     */
     protected $password;
 
-    public function getId()
+    /*
+     |------------------------------------------------------------------------
+     |  Getters
+     |------------------------------------------------------------------------
+     */
+
+    /**
+     * @return int
+     */
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getEmail()
+    /**
+     * @return string
+     */
+    public function getEmail(): string
     {
         return $this->email;
     }
 
+    /*
+     |---------------------------------------------------------------------------------
+     |  Setters
+     |---------------------------------------------------------------------------------
+     */
+
+    /**
+     * @param string $email
+     */
     public function setEmail(string $email)
     {
         $this->email = $email;

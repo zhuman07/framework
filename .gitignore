@@ -1,4 +1,4 @@
-/.vagrant
 /.idea
 /.htaccess
 /vendor
+composer.phar
