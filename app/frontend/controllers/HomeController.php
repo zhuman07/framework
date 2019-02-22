@@ -8,6 +8,7 @@
 namespace App\Frontend\Controllers;
 
 use App\Models\News;
+use App\Models\NewsCategory;
 use Core\Classes\Mapper;
 use Core\Classes\ObjectWatcher;
 
@@ -19,16 +20,25 @@ class HomeController extends BaseController
         $title = 'Hello World';
         $description = 'Site description';
 
-        $news = new Mapper(News::class);
-        $news = $news->findAll();
+        /*$news = new Mapper(News::class);
+        $news = $news->findAll();*/
 
-        /*$someNews = new Mapper(News::class);
+        $newsCategory = new Mapper(NewsCategory::class);
+        $newsCategory = $newsCategory->find(7);
+
+        $news = $newsCategory->getNews();
+
+        /*$newsCategory = new Mapper(NewsCategory::class);
+        $newsCategory = $newsCategory->find(7);
+
+        $someNews = new Mapper(News::class);
         $someNews = $someNews->find(4);
-        $someNews->setTitle('updated title');
-        $someNews->setDescription('updated description');
+        $someNews->setTitle('Test new logic by updating');
+        $someNews->setDescription('Test new logic by updating');
+        $someNews->setCategory($newsCategory);
 
         $newMaterial = new News();
-        $newMaterial->setValues(['title'=>'new mat', 'description'=>'new mat desc', 'date'=>'2019-01-29']);
+        $newMaterial->values(['title'=>'Test new logic by inserting', 'description'=>'Test new logic by inserting', 'date'=>'2019-02-23']);
         $this->serviceContainer->get('objectWatcher')->performOperations();*/
 
         $this->content = $this->viewHelper->render('index', array(

@@ -10,7 +10,26 @@ use Core\Classes\DomainObject;
 
 class News extends DomainObject
 {
+
+    /**
+     * @var string
+     */
     protected static $table_name = 'news';
+
+    /**
+     * @var array
+     */
+    protected static $fields = ['title', 'description', 'date', 'category'];
+
+    public static function manyToOne(): array
+    {
+        return array(
+            'category' => array(
+                'model' => NewsCategory::class,
+                'binder' => 'category'
+            )
+        );
+    }
 
     /**
      * @var int
@@ -31,7 +50,11 @@ class News extends DomainObject
      * @var \DateTime
      */
     protected $date;
-    protected static $fields = ['title', 'description', 'date'];
+
+    /**
+     * @var NewsCategory
+     */
+    protected $category;
 
     /*
      |---------------------------------------------------------------------
@@ -64,11 +87,20 @@ class News extends DomainObject
     }
 
     /**
-     * @return \DateTime
+     * @return string
      */
-    public function getDate(): \DateTime
+    public function getDate(): string
     {
-        return new \DateTime($this->date);
+        $date = new \DateTime($this->date);
+        return $date->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * @return NewsCategory
+     */
+    public function getCategory(): ?NewsCategory
+    {
+        return $this->category;
     }
 
     /*
@@ -86,6 +118,12 @@ class News extends DomainObject
     public function setDescription(string $description)
     {
         $this->description = $description;
+        $this->markDirty();
+    }
+
+    public function setCategory(NewsCategory $category)
+    {
+        $this->category = $category;
         $this->markDirty();
     }
 

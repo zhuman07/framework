@@ -22,7 +22,7 @@ abstract class DomainObject
      */
     protected static $fields;
 
-    final public function __construct(int $id = 0)
+    public function __construct(int $id = 0)
     {
         $this->id = $id;
 
@@ -63,6 +63,20 @@ abstract class DomainObject
         return static::$fields;
     }
 
+    public static function manyToOne(): array
+    {
+        return array(
+
+        );
+    }
+
+    public static function oneToMany(): array
+    {
+        return array(
+
+        );
+    }
+
     /**
      * @param array $data
      * @return $this
@@ -83,7 +97,7 @@ abstract class DomainObject
     public function __call($name, $arguments)
     {
         if (!method_exists($this, $name)){
-            throw new \Exception('Method '.$name.' doesn\'t exist');
+            throw new \Exception('The method '.$name.' doesn\'t exist in the '.get_class($this).' class');
         }
     }
 
