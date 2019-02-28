@@ -29,13 +29,10 @@ final class FrontController
     private function init()
     {
         $router = $this->serviceContainer->get('router');
-        $controllerName = $router->getController();
-
-        $controller = "\\App\\Frontend\\Controllers\\".$controllerName;
+        $controller = $router->getController();
         if(!class_exists($controller)){
-            throw new \Exception('Controller not found');
+            throw new \Exception("Controller $controller not found");
         }
-        //$controller = require_once($controllerPath);
         $controller = new $controller($this->serviceContainer);
         $controller->execute();
     }

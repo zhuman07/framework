@@ -15,7 +15,7 @@ use Core\Classes\ObjectWatcher;
 class HomeController extends BaseController
 {
 
-    public function actionIndex()
+    public function index()
     {
         $title = 'Hello World';
         $description = 'Site description';
@@ -23,7 +23,7 @@ class HomeController extends BaseController
         /*$news = new Mapper(News::class);
         $news = $news->findAll();*/
 
-        $newsCategory = new Mapper(NewsCategory::class);
+        $newsCategory = $this->mapper->getMapper(NewsCategory::class);
         $newsCategory = $newsCategory->find(7);
 
         $news = $newsCategory->getNews();

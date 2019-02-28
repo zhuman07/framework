@@ -78,10 +78,10 @@ final class Router
                 foreach ($params as $key => $val){
                     $assoc_params[$val] = $param_matches[++$key][0];
                 }
-                $controllerName = $route_options['controller']."Controller";
+                $controllerName = $route_options['controller'];
                 $controllerName = ucfirst($controllerName);
                 $this->controller = $controllerName;
-                $actionName = 'action'.ucfirst($route_options['action']);
+                $actionName = $route_options['action'];
                 $this->action = $actionName;
                 $this->params = $assoc_params;
                 $this->current_route = $route_name;

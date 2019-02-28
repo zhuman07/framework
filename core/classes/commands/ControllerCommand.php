@@ -8,6 +8,7 @@
 namespace Core\Classes\Commands;
 
 use Core\Classes\Command;
+use Core\Classes\Mapper;
 use Core\Classes\Router;
 use Core\Classes\ServiceContainer;
 use Core\Classes\ViewHelper;
@@ -42,11 +43,17 @@ class ControllerCommand extends Command
      */
     protected $viewHelper;
 
+    /**
+     * @var Mapper
+     */
+    protected $mapper;
+
     public function __construct(ServiceContainer $serviceContainer)
     {
         $this->serviceContainer = $serviceContainer;
         $this->router = $serviceContainer->get('router');
         $this->viewHelper = $serviceContainer->get('viewHelper');
+        $this->mapper = $serviceContainer->get('mapper');
     }
 
     protected function before(): void

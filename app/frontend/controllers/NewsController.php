@@ -10,7 +10,7 @@ namespace App\Frontend\Controllers;
 class NewsController extends BaseController
 {
 
-    public function actionView()
+    public function view()
     {
         $title = 'News №12';
         $description = 'About news';
@@ -23,7 +23,7 @@ class NewsController extends BaseController
         ));
     }
 
-    public function actionList()
+    public function list()
     {
         header('Content-Type: application/json');
         $this->render = false;

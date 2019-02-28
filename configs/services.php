@@ -9,4 +9,5 @@ return array(
     'router' => \Core\Classes\Router::getInstance(),
     'viewHelper' => new \Core\Classes\ViewHelper(),
     'objectWatcher' => \Core\Classes\ObjectWatcher::instance(),
+    'mapper' => new \Core\Classes\MapperFactory()
 );
