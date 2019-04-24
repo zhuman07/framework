@@ -24,7 +24,7 @@ class HomeController extends BaseController
         $news = $news->findAll();*/
 
         $newsCategory = $this->mapper->getMapper(NewsCategory::class);
-        $newsCategory = $newsCategory->find(7);
+        $newsCategory = $newsCategory->findOne(7);
 
         $news = $newsCategory->getNews();
 

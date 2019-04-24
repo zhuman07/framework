@@ -36,8 +36,8 @@ class Mapper
 
     public function __construct(string $modelClassName)
     {
-        if(!is_subclass_of($modelClassName, DomainObject::class)){
-            throw new CoreException("Wrong model class");
+        if(!class_exists($modelClassName) || !is_subclass_of($modelClassName, DomainObject::class)){
+            throw new CoreException("Wrong model");
         }
 
         $this->modelClass = $modelClassName;
@@ -51,7 +51,7 @@ class Mapper
      * @param int $id
      * @return DomainObject|null
      */
-    public function find(int $id = 0): ?DomainObject
+    public function findOne(int $id = 0): ?DomainObject
     {
         $old = $this->getFromMap($id);
         if (! is_null($old)) {
@@ -65,6 +65,13 @@ class Mapper
             );
         }
         $this->doSelectStmt();
+        foreach ($this->where_array as $item){
+            $this->selectStmt->bindParam(":{$item['field']}", $item['value']);
+        }
+        foreach ($this->or_where_array as $item){
+            $this->selectStmt->bindParam(":{$item['field']}", $item['value']);
+        }
+
         $this->selectStmt->execute();
         $result = $this->selectStmt->fetch(\PDO::FETCH_ASSOC);
         /*var_dump($result);
@@ -82,16 +89,16 @@ class Mapper
 
         foreach ($this->where_array as $item){
             if(strpos($query_builder, 'WHERE')){
-                $query_builder .= " AND {$item['field']}{$item['condition']}{$item['value']}";
+                $query_builder .= " AND {$item['field']}{$item['condition']}:{$item['field']}";
             } else {
-                $query_builder .= " WHERE {$item['field']}{$item['condition']}{$item['value']}";
+                $query_builder .= " WHERE {$item['field']}{$item['condition']}:{$item['field']}";
             }
         }
         foreach ($this->or_where_array as $item){
             if(strpos($query_builder, 'WHERE')){
-                $query_builder .= " OR {$item['field']}{$item['condition']}{$item['value']}";
+                $query_builder .= " OR {$item['field']}{$item['condition']}:{$item['field']}";
             } else {
-                $query_builder .= " WHERE {$item['field']}{$item['condition']}{$item['value']}";
+                $query_builder .= " WHERE {$item['field']}{$item['condition']}:{$item['field']}";
             }
         }
         $query_builder .= " ORDER BY $this->order_by";
@@ -107,16 +114,16 @@ class Mapper
 
         foreach ($this->where_array as $item){
             if(strpos($query_builder, 'WHERE')){
-                $query_builder .= " AND {$item['field']}{$item['condition']}{$item['value']}";
+                $query_builder .= " AND {$item['field']}{$item['condition']}:{$item['field']}";
             } else {
-                $query_builder .= " WHERE {$item['field']}{$item['condition']}{$item['value']}";
+                $query_builder .= " WHERE {$item['field']}{$item['condition']}:{$item['field']}";
             }
         }
         foreach ($this->or_where_array as $item){
             if(strpos($query_builder, 'WHERE')){
-                $query_builder .= " OR {$item['field']}{$item['condition']}{$item['value']}";
+                $query_builder .= " OR {$item['field']}{$item['condition']}:{$item['field']}";
             } else {
-                $query_builder .= " WHERE {$item['field']}{$item['condition']}{$item['value']}";
+                $query_builder .= " WHERE {$item['field']}{$item['condition']}:{$item['field']}";
             }
         }
         $query_builder .= " ORDER BY $this->order_by";
@@ -169,7 +176,7 @@ class Mapper
             foreach ($manyToOne as $field => $option){
                 if(isset($raw[$option['binder']])){
                     $mapper = new self($option['model']);
-                    $object = $mapper->find($raw[$option['binder']]);
+                    $object = $mapper->findOne($raw[$option['binder']]);
                     /*var_dump($object);
                     die();*/
                     if($object){
@@ -249,6 +256,12 @@ class Mapper
     public function findAll(): Collection
     {
         $this->doSelectAllStmt();
+        foreach ($this->where_array as $item){
+            $this->selectStmt->bindParam(":{$item['field']}", $item['value']);
+        }
+        foreach ($this->or_where_array as $item){
+            $this->selectStmt->bindParam(":{$item['field']}", $item['value']);
+        }
         $this->selectStmt->execute();
         $data = $this->selectStmt->fetchAll(\PDO::FETCH_ASSOC);
         return new Collection($data, $this);
