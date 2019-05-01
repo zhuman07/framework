@@ -22,7 +22,7 @@ class NewsCategory extends DomainObject
         return array(
             'news' => array(
                 'model' => News::class,
-                'binder' => 'category'
+                'foreign_key' => 'category_id'
             )
         );
     }

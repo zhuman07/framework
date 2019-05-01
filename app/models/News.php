@@ -19,14 +19,14 @@ class News extends DomainObject
     /**
      * @var array
      */
-    protected static $fields = ['title', 'description', 'date', 'category'];
+    protected static $fields = ['title', 'description', 'date', 'category_id'];
 
     public static function manyToOne(): array
     {
         return array(
             'category' => array(
                 'model' => NewsCategory::class,
-                'binder' => 'category'
+                'foreign_key' => 'category_id'
             )
         );
     }
@@ -54,7 +54,7 @@ class News extends DomainObject
     /**
      * @var NewsCategory
      */
-    protected $category;
+    protected $category_id;
 
     /*
      |---------------------------------------------------------------------
@@ -100,7 +100,7 @@ class News extends DomainObject
      */
     public function getCategory(): ?NewsCategory
     {
-        return $this->category;
+        return $this->category_id;
     }
 
     /*
@@ -112,19 +112,16 @@ class News extends DomainObject
     public function setTitle(string $title)
     {
         $this->title = $title;
-        $this->markDirty();
     }
 
     public function setDescription(string $description)
     {
         $this->description = $description;
-        $this->markDirty();
     }
 
     public function setCategory(NewsCategory $category)
     {
-        $this->category = $category;
-        $this->markDirty();
+        $this->category_id = $category;
     }
 
 }

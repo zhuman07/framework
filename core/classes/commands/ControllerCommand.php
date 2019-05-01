@@ -73,7 +73,7 @@ class ControllerCommand extends Command
         $this->before();
         $action = $this->router->getAction();
         if(!method_exists($this, $action)){
-            throw new \Exception('Action not found');
+            throw new \Exception("Action {$action} not found");
         }
         $this->{$action}();
         if($this->render === true){

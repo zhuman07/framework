@@ -10,7 +10,19 @@ use Core\Classes\DomainObject;
 
 class User extends DomainObject
 {
-    protected static $table_name = 'users';
+    protected static $table_name = 'system_users';
+
+    public static function manyToMany(): array
+    {
+        return array(
+            'category' => array(
+                'model' => Role::class,
+                'through' => 'system_users_roles',
+                'foreign_key' => 'user_id',
+                'foreign_key2' => 'role_id'
+            )
+        );
+    }
 
     /**
      * @var int

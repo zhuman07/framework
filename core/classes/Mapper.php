@@ -89,16 +89,16 @@ class Mapper
 
         foreach ($this->where_array as $item){
             if(strpos($query_builder, 'WHERE')){
-                $query_builder .= " AND {$item['field']}{$item['condition']}:{$item['field']}";
+                $query_builder .= " AND {$item['field']} {$item['condition']} :{$item['field']}";
             } else {
-                $query_builder .= " WHERE {$item['field']}{$item['condition']}:{$item['field']}";
+                $query_builder .= " WHERE {$item['field']} {$item['condition']} :{$item['field']}";
             }
         }
         foreach ($this->or_where_array as $item){
             if(strpos($query_builder, 'WHERE')){
-                $query_builder .= " OR {$item['field']}{$item['condition']}:{$item['field']}";
+                $query_builder .= " OR {$item['field']} {$item['condition']} :{$item['field']}";
             } else {
-                $query_builder .= " WHERE {$item['field']}{$item['condition']}:{$item['field']}";
+                $query_builder .= " WHERE {$item['field']} {$item['condition']} :{$item['field']}";
             }
         }
         $query_builder .= " ORDER BY $this->order_by";
@@ -174,13 +174,13 @@ class Mapper
         $manyToOne = $className::manyToOne();
         if(is_array($manyToOne) && count($manyToOne)){
             foreach ($manyToOne as $field => $option){
-                if(isset($raw[$option['binder']])){
+                if(isset($raw[$option['foreign_key']])){
                     $mapper = new self($option['model']);
-                    $object = $mapper->findOne($raw[$option['binder']]);
+                    $object = $mapper->findOne($raw[$option['foreign_key']]);
                     /*var_dump($object);
                     die();*/
                     if($object){
-                        $raw[$option['binder']] = $object;
+                        $raw[$option['foreign_key']] = $object;
                     }
                 }
             }
@@ -189,7 +189,25 @@ class Mapper
         if(is_array($oneToMany) && count($oneToMany)){
             foreach ($oneToMany as $field => $option){
                 $mapper = new self($option['model']);
-                $collection = $mapper->where($option['binder'], '=', $raw['id'])->findAll();
+                $collection = $mapper->where($option['foreign_key'], '=', $raw['id'])->findAll();
+                $raw[$field] = $collection;
+            }
+        }
+
+        $manyToMany = $className::manyToMany();
+        if(is_array($manyToMany) && count($manyToMany)){
+            foreach ($manyToMany as $field => $option){
+                $query = "SELECT * from {$option['through']} WHERE {$option['foreign_key']}=:{$option['foreign_key']}";
+                $selectStmt = self::$PDO->prepare($query);
+                $selectStmt->bindParam(":{$option['foreign_key']}", $raw['id']);
+                $selectStmt->execute();
+                $result = $selectStmt->fetch();
+                $ids = [0];
+                foreach ($result as $item){
+                    $ids[] = $item[$option['foreign_key2']];
+                }
+                $mapper = new self($option['model']);
+                $collection = $mapper->where('id', 'IN', $ids)->findAll();
                 $raw[$field] = $collection;
             }
         }

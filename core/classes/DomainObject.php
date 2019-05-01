@@ -22,19 +22,19 @@ abstract class DomainObject
      */
     protected static $fields;
 
-    public function __construct(int $id = 0)
+    /*public function __construct(int $id = 0)
     {
         $this->id = $id;
 
         if($id === 0){
             $this->markNew();
         }
-    }
+    }*/
 
     public function __set($name, $value)
     {
         if(!property_exists($this, $name)){
-            throw new \Exception("The property $name doesn't exist in class ".self::class);
+            throw new \Exception("The property $name doesn't exist in the class ".self::class);
         }
     }
 
@@ -77,6 +77,20 @@ abstract class DomainObject
         );
     }
 
+    public static function oneToOne(): array
+    {
+        return array(
+
+        );
+    }
+
+    public static function manyToMany(): array
+    {
+        return array(
+
+        );
+    }
+
     /**
      * @param array $data
      * @return $this
@@ -86,7 +100,7 @@ abstract class DomainObject
     {
         foreach ($data as $field => $val){
             if(!property_exists($this, $field)){
-                throw new CoreException("the property $field doesn't exist in class ".get_class($this));
+                throw new CoreException("the property $field doesn't exist in the class ".get_class($this));
             }
             $this->{$field} = $val;
         }
@@ -101,22 +115,22 @@ abstract class DomainObject
         }
     }
 
-    public function markNew()
+    protected function markNew()
     {
         ObjectWatcher::addNew($this);
     }
 
-    public function markDeleted()
+    protected function markDeleted()
     {
         ObjectWatcher::addDelete($this);
     }
 
-    public function markDirty()
+    protected function markDirty()
     {
         ObjectWatcher::addDirty($this);
     }
 
-    public function markClean()
+    protected function markClean()
     {
         ObjectWatcher::addClean($this);
     }
@@ -127,6 +141,21 @@ abstract class DomainObject
     public function getFinder(): Mapper
     {
         return new Mapper(get_class($this));
+    }
+
+    public function create()
+    {
+        ObjectWatcher::addNew($this);
+    }
+
+    public function update()
+    {
+        ObjectWatcher::addDirty($this);
+    }
+
+    public function delete()
+    {
+        ObjectWatcher::addDelete($this);
     }
 
 }
