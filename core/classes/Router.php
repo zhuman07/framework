@@ -52,7 +52,7 @@ final class Router
     /**
      * @var string
      */
-    private $uri_without_params;
+    private $uri_regular_expression;
 
     private static $instance;
 
@@ -76,33 +76,26 @@ final class Router
         $uri = $this->uri === "/" ? "/" : trim($this->uri, '/');
 
         foreach ($this->routes as $route_name => $route_options) {
-            $this->getNotRequiredParam($route_options['path']);
-            $this->getRequiredParam($route_options['path']);
+            $this->setParams($route_options['path']);
             $uri_no_params = preg_replace("#(\/\{[A-Za-z0-9]{1,}\})#", "",  $route_options['path']);
 
             $uri_no_params = str_replace(array('(', ')'), '', $uri_no_params);
 
-            $this->setUriWithoutParams($uri, $uri_no_params, $route_options);
+            $this->setUriRegularExpression($uri, $uri_no_params, $route_options);
 
-            /*foreach ($this->required_params as $param){
-                $uri_no_params .= "/(".$route_options[$param].")";
-            }
-            foreach ($this->not_required_params as $param){
-                $uri_no_params .= "/(".$route_options[$param].")";
-            }*/
-            if(!is_null($this->uri_without_params) && $this->isCorrectUri($uri, $this->uri_without_params)) {
-                preg_match_all("#$this->uri_without_params#", $uri, $param_matches);
+            if(!is_null($this->uri_regular_expression) && $this->isCorrectUri($uri, $this->uri_regular_expression)) {
+                Debug::dump($uri_no_params);
+                preg_match_all("#$this->uri_regular_expression#", $uri, $param_matches);
                 $params = array_merge($this->required_params, $this->not_required_params);
-
                 $assoc_params = array();
                 foreach ($params as $key => $val){
                     $assoc_params[$val] = $param_matches[++$key][0];
                 }
-                //Debug::dump($assoc_params);
+
                 $controllerName = $route_options['controller'];
                 $controllerName = ucfirst($controllerName);
                 $this->controller = $controllerName;
-                $actionName = $route_options['action'] ? $route_options['action'] : 'index';
+                $actionName = isset($assoc_params['action']) ? $assoc_params['action'] : $route_options['action'];
                 $this->action = $actionName;
                 $this->params = $assoc_params;
                 $this->current_route = $route_name;
@@ -112,36 +105,44 @@ final class Router
         }
     }
 
-    private function setUriWithoutParams(string $uri, string $uri_no_params, array $route_options)
+    private function setUriRegularExpression(string $uri, string $uri_no_params, array $route_options)
     {
-        if(($uri === '/' && $uri_no_params === '/') || ($uri_no_params !== '/' && preg_match("#$uri_no_params#", $uri))){
-            $this->uri_without_params = $uri_no_params;
+        if($uri_no_params === '/' && $uri === '/'){
+            $this->uri_regular_expression = $uri_no_params;
         }
-
         foreach ($this->required_params as $param){
             $uri_no_params .= "/(".$route_options[$param].")";
-            if($uri_no_params !== '/' && preg_match("#$uri_no_params#", $uri)){
-                $this->uri_without_params = $uri_no_params;
-                //break;
-            }
+        }
+        if($uri_no_params !== '/' && (bool)preg_match("#^$uri_no_params#", $uri)){
+            $this->uri_regular_expression = $uri_no_params;
         }
 
         foreach ($this->not_required_params as $param){
             $uri_no_params .= "/(".$route_options[$param].")";
-            if($uri_no_params !== '/' && preg_match("#$uri_no_params#", $uri)){
-                $this->uri_without_params = $uri_no_params;
-                //break;
+            if($uri_no_params !== '/' && (bool)preg_match("#^$uri_no_params#", $uri)){
+                $this->uri_regular_expression = $uri_no_params;
             }
         }
     }
 
     private function isCorrectUri(string $uri, string $uri_no_params): bool
     {
-        return ($uri === '/' && $uri_no_params === '/') || ($uri_no_params !== '/' && preg_match("#$uri_no_params#", $uri));
+        return ($uri === '/' && $uri_no_params === '/') || ($uri_no_params !== '/' && preg_match("#^$uri_no_params#", $uri));
     }
 
-    private function getRequiredParam(string $path): array
+    private function setParams(string $path)
     {
+        preg_match_all("#\((.*)\)#", $path, $required_params);
+        $str = "";
+        if(!empty($required_params[1][0])){
+            $str = $required_params[1][0];
+        }
+        preg_match_all("#(\{[A-Za-z0-9]{1,}\})#", $str, $matches);
+        $params = array_map(function($item){
+            return str_replace(array('{', '}'), '', $item);
+        }, $matches[1]);
+        $this->not_required_params = $params;
+
         preg_match_all("#(\{[A-Za-z0-9]{1,}\})#", $path, $matches);
         $params = [];
         $filtered_params = array_map(function ($item){
@@ -153,23 +154,6 @@ final class Router
             }
         }
         $this->required_params = $params;
-        return $params;
-    }
-
-    private function getNotRequiredParam(string $path): array
-    {
-        preg_match_all("#\((.*)\)#", $path, $required_params);
-
-        $str = "";
-        if(!empty($required_params[1][0])){
-            $str = $required_params[1][0];
-        }
-        preg_match_all("#(\{[A-Za-z0-9]{1,}\})#", $str, $matches);
-        $params = array_map(function($item){
-            return str_replace(array('{', '}'), '', $item);
-        }, $matches[1]);
-        $this->not_required_params = $params;
-        return $params;
     }
 
     private function __clone()
